@@ -55,6 +55,11 @@ public final class Router: ObservableObject {
     
     /// Aktif tabı değiştirir
     public func switchTab(_ id: String) {
+        
+        if let currentPath = tabPaths[selectedTabID], !currentPath.isEmpty {
+            tabPaths[selectedTabID] = NavigationPath()
+        }
+        
         selectedTabID = id
     }
     
