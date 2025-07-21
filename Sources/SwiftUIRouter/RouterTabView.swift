@@ -21,7 +21,6 @@ public struct RouteTabView<Screen: Hashable>: View {
         self.router = router
         self.tabs = tabs
         self.destinationBuilder = destinationBuilder
-        router.configureTabs(tabs.map { $0.id })
     }
     
     public var body: some View {
@@ -36,5 +35,9 @@ public struct RouteTabView<Screen: Hashable>: View {
                 .tag(tab.id)
             }
         }
+        .onAppear {
+            router.configureTabs(tabs.map { $0.id })
+        }
+
     }
 }
