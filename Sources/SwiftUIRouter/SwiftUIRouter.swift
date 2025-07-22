@@ -16,7 +16,11 @@ public final class Router: ObservableObject {
     @Published public var activeAlert: AlertItem?
     
     @Published public var activeSheet: AnyView?
+    @Published public var activeSheetID: String?
+    
     @Published public var activeFullScreen: AnyView?
+    @Published public var activeFullScreenID: String?
+
     
     private init() {}
     
@@ -58,18 +62,22 @@ public final class Router: ObservableObject {
     
     public func showSheet<Content: View>(_ content: Content) {
         activeSheet = AnyView(content)
+        activeSheetID = UUID().uuidString
     }
-    
+
     public func dismissSheet() {
         activeSheet = nil
+        activeSheetID = nil
     }
     
     public func showFullScreen<Content: View>(_ content: Content) {
         activeFullScreen = AnyView(content)
+        activeFullScreenID = UUID().uuidString
     }
-    
+
     public func dismissFullScreen() {
         activeFullScreen = nil
+        activeFullScreenID = nil
     }
     
     public func deepLink<V: Hashable>(_ screens: [V]) {

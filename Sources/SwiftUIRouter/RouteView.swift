@@ -34,21 +34,31 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                 .navigationDestination(for: Screen.self) { screen in
                     destinationBuilder(screen)
                 }
-                .sheet(item: Binding(
-                    get: { router.activeSheet.map { IdentifiableView(view: $0) } },
+                .sheet(item: Binding<SheetWrapper?>(
+                    get: {
+                        if let id = router.activeSheetID, let view = router.activeSheet {
+                            return SheetWrapper(id: id, view: view)
+                        }
+                        return nil
+                    },
                     set: { newValue in
                         if newValue == nil { router.dismissSheet() }
                     }
-                )) { identifiableView in
-                    identifiableView.view
+                )) { (wrapper: SheetWrapper) in
+                    wrapper.view
                 }
-                .fullScreenCover(item: Binding(
-                    get: { router.activeFullScreen.map { IdentifiableView(view: $0) } },
+                .fullScreenCover(item: Binding<SheetWrapper?>(
+                    get: {
+                        if let id = router.activeFullScreenID, let view = router.activeFullScreen {
+                            return SheetWrapper(id: id, view: view)
+                        }
+                        return nil
+                    },
                     set: { newValue in
                         if newValue == nil { router.dismissFullScreen() }
                     }
-                )) { identifiableView in
-                    identifiableView.view
+                )) { (wrapper: SheetWrapper) in
+                    wrapper.view
                 }
                 .alert(item: $router.activeAlert) { alert in
                     Alert(
@@ -57,6 +67,8 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                         dismissButton: .default(Text(alert.button))
                     )
                 }
+                    
+
         }
         .id(tabID)
     }
@@ -70,7 +82,8 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
 }
 
 
-struct IdentifiableView: Identifiable {
-    let id = UUID()
+struct SheetWrapper: Identifiable {
+    let id: String
     let view: AnyView
 }
+
