@@ -34,20 +34,42 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                 .navigationDestination(for: Screen.self) { screen in
                     destinationBuilder(screen)
                 }
-                .sheet(item: $router.activeSheetType) { sheetType in
-                    switch sheetType {
-                    case .sheet(let view):
+                .sheet(
+                    item: Binding<Router.ActiveSheetType?>(
+                        get: {
+                            if case .sheet(let view) = router.activeSheetType {
+                                return .sheet(view)
+                            }
+                            return nil
+                        },
+                        set: { newValue in
+                            if newValue == nil || (newValue != nil && !isSheet(newValue)) {
+                                router.dismissSheet()
+                            }
+                        }
+                    )
+                ) { sheet in
+                    if case .sheet(let view) = sheet {
                         view
-                    case .fullScreenSheet:
-                        EmptyView() 
                     }
                 }
-                .fullScreenCover(item: $router.activeSheetType) { sheetType in
-                    switch sheetType {
-                    case .fullScreenSheet(let view):
+                .fullScreenCover(
+                    item: Binding<Router.ActiveSheetType?>(
+                        get: {
+                            if case .fullScreenSheet(let view) = router.activeSheetType {
+                                return .fullScreenSheet(view)
+                            }
+                            return nil
+                        },
+                        set: { newValue in
+                            if newValue == nil || (newValue != nil && !isFullScreenSheet(newValue)) {
+                                router.dismissSheet()
+                            }
+                        }
+                    )
+                ) { fullScreenSheet in
+                    if case .fullScreenSheet(let view) = fullScreenSheet {
                         view
-                    case .sheet:
-                        EmptyView()
                     }
                 }
                 .alert(item: $router.activeAlert) { alert in
@@ -68,16 +90,17 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
     }
 }
 
-// Basit wrapper AnyView için item protokolü sağlamak üzere
-private struct SheetWrapper: Identifiable, Equatable {
-    static func == (lhs: SheetWrapper, rhs: SheetWrapper) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    let id = UUID()
-    let view: AnyView
+private func isSheet(_ sheet: Router.ActiveSheetType?) -> Bool {
+    guard let sheet else { return false }
+    if case .sheet = sheet { return true }
+    return false
 }
 
+private func isFullScreenSheet(_ sheet: Router.ActiveSheetType?) -> Bool {
+    guard let sheet else { return false }
+    if case .fullScreenSheet = sheet { return true }
+    return false
+}
 
 @available(macOS 10.15, *)
 public struct AnyIdentifiable: Identifiable, Equatable {
