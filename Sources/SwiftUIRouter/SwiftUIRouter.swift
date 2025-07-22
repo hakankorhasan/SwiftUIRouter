@@ -25,6 +25,7 @@ public final class Router: ObservableObject {
     @Published public var activePopupID: String?
 
     @Published public var activePopupBackgroundColor: Color = Color.clear
+    @Published public var activePopupCornerRadius: CGFloat = 16
 
     public var onDeepLinkReceived: ((URL) -> Void)?
     
@@ -87,12 +88,10 @@ public final class Router: ObservableObject {
     }
     
     public func showPopup<Content: View>(_ content: Content, backgroundColor: Color, cornerRadius: CGFloat) {
-        activePopup = AnyView(
-            content
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-        )
+        activePopup = AnyView(content)
         activePopupID = UUID().uuidString
         activePopupBackgroundColor = backgroundColor
+        activePopupCornerRadius = cornerRadius
     }
 
     public func dismissPopup() {

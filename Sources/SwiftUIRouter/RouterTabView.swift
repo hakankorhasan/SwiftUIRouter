@@ -73,6 +73,7 @@ public struct RouteTabView<Screen: Hashable>: View {
                     .zIndex(2)
                     .transition(.opacity)
                     .background(router.activePopupBackgroundColor)
+                    .cornerRadius(router.activePopupCornerRadius)
             }
         }
     }
