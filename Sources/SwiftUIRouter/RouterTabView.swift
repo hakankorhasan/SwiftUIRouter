@@ -26,8 +26,8 @@ public struct RouteTabView<Screen: Hashable>: View {
         TabView(selection: Binding(
             get: { router.selectedTabID },
             set: { newValue in
-                
                 if router.selectedTabID != newValue {
+                    router.dismissSheet()
                     router.popToRoot(tabID: newValue)
                 }
                 router.selectedTabID = newValue

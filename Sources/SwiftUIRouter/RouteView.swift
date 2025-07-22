@@ -69,6 +69,7 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                     )
                 }
         }
+        .id(tabID)
     }
     
     private func pathBinding() -> Binding<NavigationPath> {
