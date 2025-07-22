@@ -61,7 +61,7 @@ public struct RouteTabView<Screen: Hashable>: View {
         Group {
             if let _ = router.activePopupID, let popup = router.activePopup {
                 
-                router.activePopupBackgroundColor
+                Color.black.opacity(0.4)
                     .ignoresSafeArea()
                     .onTapGesture {
                         router.dismissPopup()
