@@ -18,7 +18,7 @@ public final class Router: ObservableObject {
     
     private init() {}
     
-    /// Tab ID'lerini ayarlar ve ilkini seçili yapar
+    // Tab ID'lerini ayarlar
     public func configureTabs(_ tabIDs: [String]) {
         for id in tabIDs {
             if tabPaths[id] == nil {
@@ -28,57 +28,53 @@ public final class Router: ObservableObject {
         selectedTabID = tabIDs.first ?? ""
     }
     
-    /// Seçili tab için NavigationPath binding'i verir
-    public func bindingForSelectedPath() -> Binding<NavigationPath> {
+    // ✅ Tab bazlı NavigationPath binding
+    public func binding(for tabID: String) -> Binding<NavigationPath> {
         Binding<NavigationPath>(
-            get: { [weak self] in self?.tabPaths[self?.selectedTabID ?? ""] ?? NavigationPath() },
-            set: { [weak self] newValue in self?.tabPaths[self?.selectedTabID ?? ""] = newValue }
+            get: { [weak self] in self?.tabPaths[tabID] ?? NavigationPath() },
+            set: { [weak self] newValue in self?.tabPaths[tabID] = newValue }
         )
     }
     
-    /// Seçili tab'a generic Hashable ekran kimliği push eder
+    // Seçili tab'a ekran push
     public func push<V: Hashable>(_ screen: V) {
         tabPaths[selectedTabID]?.append(screen)
     }
     
-    /// Seçili tabda bir ekran geri gider
+    // Geri git
     public func pop() {
         guard var path = tabPaths[selectedTabID], !path.isEmpty else { return }
         path.removeLast()
         tabPaths[selectedTabID] = path
     }
     
-    /// Seçili tabdaki navigation stack'i root'a döndürür
-    public func popToRoot() {
-        tabPaths[selectedTabID] = NavigationPath()
+    // Root'a dön
+    public func popToRoot(tabID: String? = nil) {
+        let id = tabID ?? selectedTabID
+        tabPaths[id] = NavigationPath()
     }
     
-    /// Aktif tabı değiştirir
+    // ✅ Tab değiştirme (artık resetleme yok, sadece seçimi değiştiriyor)
     public func switchTab(_ id: String) {
-        
-        if let currentPath = tabPaths[selectedTabID], !currentPath.isEmpty {
-            tabPaths[selectedTabID] = NavigationPath()
-        }
-        
         selectedTabID = id
     }
     
-    /// Sheet olarak bir view gösterir
+    // Sheet göster
     public func presentSheet<V: View>(_ view: V) {
         activeSheet = AnyView(view)
     }
     
-    /// Sheet'i kapatır
+    // Sheet kapat
     public func dismissSheet() {
         activeSheet = nil
     }
     
-    /// Seçili tab için deep link navigasyonunu ayarlar
+    // Deep link navigation
     public func deepLink<V: Hashable>(_ screens: [V]) {
         tabPaths[selectedTabID] = NavigationPath(screens)
     }
     
-    /// Alert gösterir
+    // Alert
     public func showAlert(title: String, message: String, button: String = "Tamam") {
         activeAlert = AlertItem(title: title, message: message, button: button)
     }

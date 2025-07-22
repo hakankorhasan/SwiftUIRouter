@@ -26,9 +26,14 @@ public struct RouteTabView<Screen: Hashable>: View {
     public var body: some View {
         TabView(selection: $router.selectedTabID) {
             ForEach(tabs) { tab in
-                RouteView<Screen, AnyView>(router: router, content: {
-                    tab.content()
-                }, destinationBuilder: destinationBuilder)
+                RouteView<Screen, AnyView>(
+                    router: router,
+                    tabID: tab.id, 
+                    content: {
+                        tab.content()
+                    },
+                    destinationBuilder: destinationBuilder
+                )
                 .tabItem {
                     Label(tab.title, systemImage: tab.icon)
                 }
@@ -38,6 +43,6 @@ public struct RouteTabView<Screen: Hashable>: View {
         .onAppear {
             router.configureTabs(tabs.map { $0.id })
         }
-
     }
 }
+
