@@ -34,33 +34,21 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                 .navigationDestination(for: Screen.self) { screen in
                     destinationBuilder(screen)
                 }
-                
-                .sheet(
-                    item: Binding(
-                        get: {
-                            if case .sheet(let view) = router.activeSheetType {
-                                return SheetWrapper(view: view)
-                            }
-                            return nil
-                        },
-                        set: { _ in router.dismissSheet() }
-                    )
-                ) { wrapper in
-                    wrapper.view
+                .sheet(item: $router.activeSheetType) { sheetType in
+                    switch sheetType {
+                    case .sheet(let view):
+                        view
+                    case .fullScreenSheet:
+                        EmptyView() 
+                    }
                 }
-                
-                .fullScreenCover(
-                    item: Binding(
-                        get: {
-                            if case .fullScreenSheet(let view) = router.activeSheetType {
-                                return SheetWrapper(view: view)
-                            }
-                            return nil
-                        },
-                        set: { _ in router.dismissSheet() }
-                    )
-                ) { wrapper in
-                    wrapper.view
+                .fullScreenCover(item: $router.activeSheetType) { sheetType in
+                    switch sheetType {
+                    case .fullScreenSheet(let view):
+                        view
+                    case .sheet:
+                        EmptyView()
+                    }
                 }
                 .alert(item: $router.activeAlert) { alert in
                     Alert(
