@@ -4,7 +4,6 @@
 //
 //  Created by Hakan on 21.07.2025.
 //
-
 import SwiftUI
 
 @available(iOS 16.0, macOS 13.0, *)
@@ -24,11 +23,20 @@ public struct RouteTabView<Screen: Hashable>: View {
     }
     
     public var body: some View {
-        TabView(selection: $router.selectedTabID) {
+        TabView(selection: Binding(
+            get: { router.selectedTabID },
+            set: { newValue in
+                
+                if router.selectedTabID != newValue {
+                    router.popToRoot(tabID: newValue)
+                }
+                router.selectedTabID = newValue
+            }
+        )) {
             ForEach(tabs) { tab in
                 RouteView<Screen, AnyView>(
                     router: router,
-                    tabID: tab.id, 
+                    tabID: tab.id,
                     content: {
                         tab.content()
                     },
@@ -45,4 +53,3 @@ public struct RouteTabView<Screen: Hashable>: View {
         }
     }
 }
-
