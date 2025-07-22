@@ -14,28 +14,45 @@ public final class Router: ObservableObject {
     @Published public var tabPaths: [String: NavigationPath] = [:]
     
     
+//    public enum ActiveSheetType: Identifiable, Equatable {
+//        case sheet(AnyView)
+//        case fullScreenSheet(AnyView)
+//        
+//        public var id: Int {
+//            switch self {
+//            case .sheet: return 0
+//            case .fullScreenSheet: return 1
+//            }
+//        }
+//        
+//        public static func == (lhs: ActiveSheetType, rhs: ActiveSheetType) -> Bool {
+//            switch (lhs, rhs) {
+//            case (.sheet, .sheet):
+//                return true
+//            case (.fullScreenSheet, .fullScreenSheet):
+//                return true
+//            default:
+//                return false
+//            }
+//        }
+//    }
+    
     public enum ActiveSheetType: Identifiable, Equatable {
-        case sheet(AnyView)
-        case fullScreenSheet(AnyView)
+        case sheet(id: UUID, view: AnyView)
+        case fullScreenSheet(id: UUID, view: AnyView)
         
-        public var id: Int {
+        public var id: UUID {
             switch self {
-            case .sheet: return 0
-            case .fullScreenSheet: return 1
+            case .sheet(let id, _): return id
+            case .fullScreenSheet(let id, _): return id
             }
         }
         
         public static func == (lhs: ActiveSheetType, rhs: ActiveSheetType) -> Bool {
-            switch (lhs, rhs) {
-            case (.sheet, .sheet):
-                return true
-            case (.fullScreenSheet, .fullScreenSheet):
-                return true
-            default:
-                return false
-            }
+            return lhs.id == rhs.id
         }
     }
+
     
     @Published public var activeSheetType: ActiveSheetType? = nil
     @Published public var activeAlert: AlertItem?
@@ -81,13 +98,22 @@ public final class Router: ObservableObject {
         tabPaths[id] = NavigationPath()
     }
     
-    public func presentSheet<V: View>(_ view: V) {
-        activeSheetType = .sheet(AnyView(view))
-    }
+//    public func presentSheet<V: View>(_ view: V) {
+//        activeSheetType = .sheet(AnyView(view))
+//    }
+//    
+//    public func presentFullScreenSheet<V: View>(_ view: V) {
+//        activeSheetType = .fullScreenSheet(AnyView(view))
+//    }
     
-    public func presentFullScreenSheet<V: View>(_ view: V) {
-        activeSheetType = .fullScreenSheet(AnyView(view))
+    public func presentSheet<V: View>(_ view: V) {
+        activeSheetType = .sheet(id: UUID(), view: AnyView(view))
     }
+
+    public func presentFullScreenSheet<V: View>(_ view: V) {
+        activeSheetType = .fullScreenSheet(id: UUID(), view: AnyView(view))
+    }
+
     
     public func dismissSheet() {
         activeSheetType = nil
