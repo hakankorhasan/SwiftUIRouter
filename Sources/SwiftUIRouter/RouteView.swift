@@ -34,84 +34,25 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                 .navigationDestination(for: Screen.self) { screen in
                     destinationBuilder(screen)
                 }
-//                .sheet(
-//                    item: Binding<Router.ActiveSheetType?>(
-//                        get: {
-//                            if case .sheet(let view) = router.activeSheetType {
-//                                return .sheet(view)
-//                            }
-//                            return nil
-//                        },
-//                        set: { newValue in
-//                            if newValue == nil || (newValue != nil && !isSheet(newValue)) {
-//                                router.dismissSheet()
-//                            }
-//                        }
-//                    )
-//                ) { sheet in
-//                    if case .sheet(let view) = sheet {
-//                        view
-//                    }
-//                }
-//                .fullScreenCover(
-//                    item: Binding<Router.ActiveSheetType?>(
-//                        get: {
-//                            if case .fullScreenSheet(let view) = router.activeSheetType {
-//                                return .fullScreenSheet(view)
-//                            }
-//                            return nil
-//                        },
-//                        set: { newValue in
-//                            if newValue == nil || (newValue != nil && !isFullScreenSheet(newValue)) {
-//                                router.dismissSheet()
-//                            }
-//                        }
-//                    )
-//                ) { fullScreenSheet in
-//                    if case .fullScreenSheet(let view) = fullScreenSheet {
-//                        view
-//                    }
-//                }
                 .sheet(
                     item: Binding<Router.ActiveSheetType?>(
                         get: {
-                            if case let .sheet(id, view) = router.activeSheetType {
-                                return .sheet(id: id, view: view)
+                            if case .sheet(let view) = router.activeSheetType {
+                                return .sheet(view)
                             }
                             return nil
                         },
                         set: { newValue in
-                            if newValue == nil {
+                            if newValue == nil || (newValue != nil && !isSheet(newValue)) {
                                 router.dismissSheet()
                             }
                         }
                     )
                 ) { sheet in
-                    if case .sheet(_, let view) = sheet {
+                    if case .sheet(let view) = sheet {
                         view
                     }
                 }
-
-                .fullScreenCover(
-                    item: Binding<Router.ActiveSheetType?>(
-                        get: {
-                            if case let .fullScreenSheet(id, view) = router.activeSheetType {
-                                return .fullScreenSheet(id: id, view: view)
-                            }
-                            return nil
-                        },
-                        set: { newValue in
-                            if newValue == nil {
-                                router.dismissSheet()
-                            }
-                        }
-                    )
-                ) { fullScreenSheet in
-                    if case .fullScreenSheet(_, let view) = fullScreenSheet {
-                        view
-                    }
-                }
-
                 .alert(item: $router.activeAlert) { alert in
                     Alert(
                         title: Text(alert.title),
@@ -119,6 +60,25 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                         dismissButton: .default(Text(alert.button))
                     )
                 }
+        }
+        .fullScreenCover(
+            item: Binding<Router.ActiveSheetType?>(
+                get: {
+                    if case .fullScreenSheet(let view) = router.activeSheetType {
+                        return .fullScreenSheet(view)
+                    }
+                    return nil
+                },
+                set: { newValue in
+                    if newValue == nil || (newValue != nil && !isFullScreenSheet(newValue)) {
+                        router.dismissSheet()
+                    }
+                }
+            )
+        ) { fullScreenSheet in
+            if case .fullScreenSheet(let view) = fullScreenSheet {
+                view
+            }
         }
     }
     

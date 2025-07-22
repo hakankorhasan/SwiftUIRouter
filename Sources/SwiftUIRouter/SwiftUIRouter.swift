@@ -14,51 +14,31 @@ public final class Router: ObservableObject {
     @Published public var tabPaths: [String: NavigationPath] = [:]
     
     
-//    public enum ActiveSheetType: Identifiable, Equatable {
-//        case sheet(AnyView)
-//        case fullScreenSheet(AnyView)
-//        
-//        public var id: Int {
-//            switch self {
-//            case .sheet: return 0
-//            case .fullScreenSheet: return 1
-//            }
-//        }
-//        
-//        public static func == (lhs: ActiveSheetType, rhs: ActiveSheetType) -> Bool {
-//            switch (lhs, rhs) {
-//            case (.sheet, .sheet):
-//                return true
-//            case (.fullScreenSheet, .fullScreenSheet):
-//                return true
-//            default:
-//                return false
-//            }
-//        }
-//    }
-    
     public enum ActiveSheetType: Identifiable, Equatable {
-        case sheet(id: UUID, view: AnyView)
-        case fullScreenSheet(id: UUID, view: AnyView)
+        case sheet(AnyView)
+        case fullScreenSheet(AnyView)
         
-        public var id: UUID {
+        public var id: Int {
             switch self {
-            case .sheet(let id, _): return id
-            case .fullScreenSheet(let id, _): return id
+            case .sheet: return 0
+            case .fullScreenSheet: return 1
             }
         }
         
         public static func == (lhs: ActiveSheetType, rhs: ActiveSheetType) -> Bool {
-            return lhs.id == rhs.id
+            switch (lhs, rhs) {
+            case (.sheet, .sheet):
+                return true
+            case (.fullScreenSheet, .fullScreenSheet):
+                return true
+            default:
+                return false
+            }
         }
     }
-
     
     @Published public var activeSheetType: ActiveSheetType? = nil
     @Published public var activeAlert: AlertItem?
-    
-    private let fullScreenSheetId = UUID(uuidString: "11111111-1111-1111-1111-111111111111")!
-
     
     private init() {}
     
@@ -98,32 +78,13 @@ public final class Router: ObservableObject {
         tabPaths[id] = NavigationPath()
     }
     
-//    public func presentSheet<V: View>(_ view: V) {
-//        activeSheetType = .sheet(AnyView(view))
-//    }
-//    
-//    public func presentFullScreenSheet<V: View>(_ view: V) {
-//        activeSheetType = .fullScreenSheet(AnyView(view))
-//    }
-    
     public func presentSheet<V: View>(_ view: V) {
-        activeSheetType = .sheet(id: UUID(), view: AnyView(view))
+        activeSheetType = .sheet(AnyView(view))
     }
-
+    
     public func presentFullScreenSheet<V: View>(_ view: V) {
-        // Önce mevcut modal varsa kapat
-        if activeSheetType != nil {
-            dismissSheet()
-            // Küçük bir gecikme ver
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.activeSheetType = .fullScreenSheet(id: UUID(), view: AnyView(view))
-            }
-        } else {
-            activeSheetType = .fullScreenSheet(id: UUID(), view: AnyView(view))
-        }
+        activeSheetType = .fullScreenSheet(AnyView(view))
     }
-
-
     
     public func dismissSheet() {
         activeSheetType = nil
