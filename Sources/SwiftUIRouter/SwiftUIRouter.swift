@@ -86,14 +86,9 @@ public final class Router: ObservableObject {
         activeFullScreenID = nil
     }
     
-    public func showPopup<Content: View>(_ content: Content, backgroundColor: Color? = nil) {
+    public func showPopup<Content: View>(_ content: Content, backgroundColor: Color) {
         activePopup = AnyView(content)
         activePopupID = UUID().uuidString
-        if let bg = backgroundColor {
-            activePopupBackgroundColor = bg
-        } else {
-            activePopupBackgroundColor = Color.black.opacity(0.4) // Default
-        }
     }
 
 
