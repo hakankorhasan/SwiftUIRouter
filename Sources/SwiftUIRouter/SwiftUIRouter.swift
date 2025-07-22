@@ -18,7 +18,6 @@ public final class Router: ObservableObject {
     
     private init() {}
     
-    // Tab ID'lerini ayarlar
     public func configureTabs(_ tabIDs: [String]) {
         for id in tabIDs {
             if tabPaths[id] == nil {
@@ -28,7 +27,6 @@ public final class Router: ObservableObject {
         selectedTabID = tabIDs.first ?? ""
     }
     
-    // ✅ Tab bazlı NavigationPath binding
     public func binding(for tabID: String) -> Binding<NavigationPath> {
         Binding<NavigationPath>(
             get: { [weak self] in self?.tabPaths[tabID] ?? NavigationPath() },
@@ -36,45 +34,39 @@ public final class Router: ObservableObject {
         )
     }
     
-    // Seçili tab'a ekran push
     public func push<V: Hashable>(_ screen: V) {
         tabPaths[selectedTabID]?.append(screen)
     }
     
-    // Geri git
     public func pop() {
         guard var path = tabPaths[selectedTabID], !path.isEmpty else { return }
         path.removeLast()
         tabPaths[selectedTabID] = path
     }
     
-    // Root'a dön
     public func popToRoot(tabID: String? = nil) {
         let id = tabID ?? selectedTabID
         tabPaths[id] = NavigationPath()
     }
     
-    // ✅ Tab değiştirme (artık resetleme yok, sadece seçimi değiştiriyor)
+    /// ✅ Tab değiştirince sıfırla
     public func switchTab(_ id: String) {
         selectedTabID = id
+        tabPaths[id] = NavigationPath() // <-- Reset burada
     }
     
-    // Sheet göster
     public func presentSheet<V: View>(_ view: V) {
         activeSheet = AnyView(view)
     }
     
-    // Sheet kapat
     public func dismissSheet() {
         activeSheet = nil
     }
     
-    // Deep link navigation
     public func deepLink<V: Hashable>(_ screens: [V]) {
         tabPaths[selectedTabID] = NavigationPath(screens)
     }
     
-    // Alert
     public func showAlert(title: String, message: String, button: String = "Tamam") {
         activeAlert = AlertItem(title: title, message: message, button: button)
     }
