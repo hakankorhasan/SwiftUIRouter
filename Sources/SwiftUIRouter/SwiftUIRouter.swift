@@ -86,12 +86,14 @@ public final class Router: ObservableObject {
         activeFullScreenID = nil
     }
     
-    public func showPopup<Content: View>(_ content: Content, backgroundColor: Color) {
-        activePopup = AnyView(content)
+    public func showPopup<Content: View>(_ content: Content, backgroundColor: Color, cornerRadius: CGFloat) {
+        activePopup = AnyView(
+            content
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        )
         activePopupID = UUID().uuidString
         activePopupBackgroundColor = backgroundColor
     }
-
 
     public func dismissPopup() {
         activePopup = nil
