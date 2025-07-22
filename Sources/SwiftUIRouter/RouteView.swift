@@ -39,6 +39,9 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                 .sheet(item: $router.activeSheet) { item in
                     item.view
                 }
+                .fullScreenCover(item: $router.activeFullScreenSheet) { item in
+                    item.view
+                }
                 .alert(item: $router.activeAlert) { alert in
                     Alert(
                         title: Text(alert.title),

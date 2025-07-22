@@ -14,6 +14,7 @@ public final class Router: ObservableObject {
     @Published public var tabPaths: [String: NavigationPath] = [:]
     
     @Published public var activeSheet: AnyIdentifiable?
+    @Published public var activeFullScreenSheet: AnyIdentifiable?
     @Published public var activeAlert: AlertItem?
     
     private init() {}
@@ -58,9 +59,18 @@ public final class Router: ObservableObject {
         activeSheet = AnyIdentifiable(id: UUID(), view: AnyView(view))
     }
     
+    public func presentFullScreenSheet<V: View>(_ view: V) {
+        activeFullScreenSheet = AnyIdentifiable(id: UUID(), view: AnyView(view))
+    }
+    
     public func dismissSheet() {
         activeSheet = nil
     }
+
+    public func dismissFullScreenSheet() {
+        activeFullScreenSheet = nil
+    }
+
     
     public func deepLink<V: Hashable>(_ screens: [V]) {
         tabPaths[selectedTabID] = NavigationPath(screens)
