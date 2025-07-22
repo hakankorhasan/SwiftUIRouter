@@ -24,6 +24,8 @@ public final class Router: ObservableObject {
     @Published public var activePopup: AnyView?
     @Published public var activePopupID: String?
 
+    @Published public var activePopupBackgroundColor: Color = Color.black.opacity(0.4)
+
     public var onDeepLinkReceived: ((URL) -> Void)?
     
     private init() {}
@@ -84,10 +86,16 @@ public final class Router: ObservableObject {
         activeFullScreenID = nil
     }
     
-    public func showPopup<Content: View>(_ content: Content) {
+    public func showPopup<Content: View>(_ content: Content, backgroundColor: Color? = nil) {
         activePopup = AnyView(content)
         activePopupID = UUID().uuidString
+        if let bg = backgroundColor {
+            activePopupBackgroundColor = bg
+        } else {
+            activePopupBackgroundColor = Color.black.opacity(0.4) // Default
+        }
     }
+
 
     public func dismissPopup() {
         activePopup = nil
