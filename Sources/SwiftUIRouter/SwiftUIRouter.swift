@@ -21,6 +21,7 @@ public final class Router: ObservableObject {
     @Published public var activeFullScreen: AnyView?
     @Published public var activeFullScreenID: String?
 
+    public var onDeepLinkReceived: ((URL) -> Void)?
     
     private init() {}
     
@@ -86,5 +87,9 @@ public final class Router: ObservableObject {
     
     public func showAlert(title: String, message: String, button: String = "OK") {
         activeAlert = AlertItem(title: title, message: message, button: button)
+    }
+    
+    public func handleDeepLink(url: URL) {
+        onDeepLinkReceived?(url)
     }
 }
