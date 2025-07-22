@@ -34,33 +34,22 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                 .navigationDestination(for: Screen.self) { screen in
                     destinationBuilder(screen)
                 }
-                .sheet(
-                    item: Binding(
-                        get: {
-                            if case let .sheet(id, view) = router.activeSheetType {
-                                return AnyIdentifiable(id: id, view: view)
-                            }
-                            return nil
-                        },
-                        set: { _ in router.dismissSheet() }
-                    )
-                ) { wrapper in
-                    wrapper.view
+                .sheet(item: Binding(
+                    get: { router.activeSheet.map { IdentifiableView(view: $0) } },
+                    set: { newValue in
+                        if newValue == nil { router.dismissSheet() }
+                    }
+                )) { identifiableView in
+                    identifiableView.view
                 }
-                .fullScreenCover(
-                    item: Binding(
-                        get: {
-                            if case let .fullScreenSheet(id, view) = router.activeSheetType {
-                                return AnyIdentifiable(id: id, view: view)
-                            }
-                            return nil
-                        },
-                        set: { _ in router.dismissSheet() }
-                    )
-                ) { wrapper in
-                    wrapper.view
+                .fullScreenCover(item: Binding(
+                    get: { router.activeFullScreen.map { IdentifiableView(view: $0) } },
+                    set: { newValue in
+                        if newValue == nil { router.dismissFullScreen() }
+                    }
+                )) { identifiableView in
+                    identifiableView.view
                 }
-
                 .alert(item: $router.activeAlert) { alert in
                     Alert(
                         title: Text(alert.title),
@@ -80,17 +69,8 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
     }
 }
 
-@available(macOS 10.15, *)
-public struct AnyIdentifiable: Identifiable, Equatable {
-    public let id: UUID
-    public let view: AnyView
-    
-    public static func == (lhs: AnyIdentifiable, rhs: AnyIdentifiable) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    public init(id: UUID, view: AnyView) {
-        self.id = id
-        self.view = view
-    }
+
+struct IdentifiableView: Identifiable {
+    let id = UUID()
+    let view: AnyView
 }
