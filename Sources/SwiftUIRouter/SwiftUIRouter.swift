@@ -20,6 +20,9 @@ public final class Router: ObservableObject {
     
     @Published public var activeFullScreen: AnyView?
     @Published public var activeFullScreenID: String?
+    
+    @Published public var activePopup: AnyView?
+    @Published public var activePopupID: String?
 
     public var onDeepLinkReceived: ((URL) -> Void)?
     
@@ -79,6 +82,16 @@ public final class Router: ObservableObject {
     public func dismissFullScreen() {
         activeFullScreen = nil
         activeFullScreenID = nil
+    }
+    
+    public func showPopup<Content: View>(_ content: Content) {
+        activePopup = AnyView(content)
+        activePopupID = UUID().uuidString
+    }
+
+    public func dismissPopup() {
+        activePopup = nil
+        activePopupID = nil
     }
     
     public func deepLink<V: Hashable>(_ screens: [V]) {

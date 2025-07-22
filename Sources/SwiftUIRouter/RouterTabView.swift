@@ -52,6 +52,23 @@ public struct RouteTabView<Screen: Hashable>: View {
         .fullScreenCover(item: fullScreenBinding) { wrapper in
             wrapper.view
         }
+        .overlay {
+            popupOverlay
+        }
+    }
+    
+    private var popupOverlay: some View {
+        Group {
+            if let id = router.activePopupID, let popup = router.activePopup {
+                popup
+                    .background(Color.black.opacity(0.4).ignoresSafeArea())
+                    .onTapGesture {
+                        router.dismissPopup()
+                    }
+                    .transition(.opacity)
+                    .zIndex(1)
+            }
+        }
     }
 
     // MARK: - Bindings
