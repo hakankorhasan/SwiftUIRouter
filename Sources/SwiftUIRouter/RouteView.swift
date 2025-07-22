@@ -34,32 +34,6 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                 .navigationDestination(for: Screen.self) { screen in
                     destinationBuilder(screen)
                 }
-                .sheet(item: Binding<SheetWrapper?>(
-                    get: {
-                        if let id = router.activeSheetID, let view = router.activeSheet {
-                            return SheetWrapper(id: id, view: view)
-                        }
-                        return nil
-                    },
-                    set: { newValue in
-                        if newValue == nil { router.dismissSheet() }
-                    }
-                )) { (wrapper: SheetWrapper) in
-                    wrapper.view
-                }
-                .fullScreenCover(item: Binding<SheetWrapper?>(
-                    get: {
-                        if let id = router.activeFullScreenID, let view = router.activeFullScreen {
-                            return SheetWrapper(id: id, view: view)
-                        }
-                        return nil
-                    },
-                    set: { newValue in
-                        if newValue == nil { router.dismissFullScreen() }
-                    }
-                )) { (wrapper: SheetWrapper) in
-                    wrapper.view
-                }
                 .alert(item: $router.activeAlert) { alert in
                     Alert(
                         title: Text(alert.title),
@@ -70,7 +44,6 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                     
 
         }
-        .id(tabID)
     }
     
     private func pathBinding() -> Binding<NavigationPath> {
@@ -80,10 +53,3 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
         )
     }
 }
-
-
-struct SheetWrapper: Identifiable {
-    let id: String
-    let view: AnyView
-}
-
