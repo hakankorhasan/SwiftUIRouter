@@ -15,13 +15,13 @@ public final class Router: ObservableObject {
     
     
     public enum ActiveSheetType: Identifiable, Equatable {
-        case sheet(id: UUID, view: AnyView)
-        case fullScreenSheet(id: UUID, view: AnyView)
+        case sheet(UUID, AnyView)
+        case fullScreenSheet(UUID, AnyView)
         
         public var id: UUID {
             switch self {
-            case .sheet(let id, _): return id
-            case .fullScreenSheet(let id, _): return id
+            case .sheet(let id, _), .fullScreenSheet(let id, _):
+                return id
             }
         }
         
@@ -29,6 +29,7 @@ public final class Router: ObservableObject {
             lhs.id == rhs.id
         }
     }
+
     
     @Published public var activeSheetType: ActiveSheetType? = nil
     @Published public var activeAlert: AlertItem?
@@ -72,11 +73,11 @@ public final class Router: ObservableObject {
     }
     
     public func presentSheet<V: View>(_ view: V) {
-        activeSheetType = .sheet(id: UUID(), view: AnyView(view))
+        activeSheetType = .sheet(UUID(), AnyView(view))
     }
 
     public func presentFullScreenSheet<V: View>(_ view: V) {
-        activeSheetType = .fullScreenSheet(id: UUID(), view: AnyView(view))
+        activeSheetType = .fullScreenSheet(UUID(), AnyView(view))
     }
     
     public func dismissSheet() {

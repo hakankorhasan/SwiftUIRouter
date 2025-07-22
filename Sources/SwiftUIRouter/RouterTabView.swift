@@ -26,10 +26,9 @@ public struct RouteTabView<Screen: Hashable>: View {
         TabView(selection: Binding(
             get: { router.selectedTabID },
             set: { newValue in
-                if router.selectedTabID != newValue {
-                    router.dismissSheet()
-                    router.popToRoot(tabID: newValue)
-                }
+                guard router.selectedTabID != newValue else { return }
+                router.dismissSheet()
+                router.popToRoot(tabID: newValue)
                 router.selectedTabID = newValue
             }
         )) {
@@ -42,6 +41,7 @@ public struct RouteTabView<Screen: Hashable>: View {
                     },
                     destinationBuilder: destinationBuilder
                 )
+                .id(tab.id)
                 .tabItem {
                     Label(tab.title, systemImage: tab.icon)
                 }
@@ -49,7 +49,9 @@ public struct RouteTabView<Screen: Hashable>: View {
             }
         }
         .onAppear {
-            router.configureTabs(tabs.map { $0.id })
+            if router.tabPaths.isEmpty {
+                router.configureTabs(tabs.map { $0.id })
+            }
         }
     }
 }
