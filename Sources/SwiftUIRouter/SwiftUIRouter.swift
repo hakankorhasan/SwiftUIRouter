@@ -13,8 +13,31 @@ public final class Router: ObservableObject {
     @Published public var selectedTabID: String = ""
     @Published public var tabPaths: [String: NavigationPath] = [:]
     
-    @Published public var activeSheet: AnyIdentifiable?
-    @Published public var activeFullScreenSheet: AnyIdentifiable?
+    
+    public enum ActiveSheetType: Identifiable, Equatable {
+        case sheet(AnyView)
+        case fullScreenSheet(AnyView)
+        
+        public var id: Int {
+            switch self {
+            case .sheet: return 0
+            case .fullScreenSheet: return 1
+            }
+        }
+        
+        public static func == (lhs: ActiveSheetType, rhs: ActiveSheetType) -> Bool {
+            switch (lhs, rhs) {
+            case (.sheet, .sheet):
+                return true
+            case (.fullScreenSheet, .fullScreenSheet):
+                return true
+            default:
+                return false
+            }
+        }
+    }
+    
+    @Published public var activeSheetType: ActiveSheetType? = nil
     @Published public var activeAlert: AlertItem?
     
     private let fullScreenSheetId = UUID(uuidString: "11111111-1111-1111-1111-111111111111")!
@@ -59,19 +82,15 @@ public final class Router: ObservableObject {
     }
     
     public func presentSheet<V: View>(_ view: V) {
-        activeSheet = AnyIdentifiable(id: UUID(), view: AnyView(view))
+        activeSheetType = .sheet(AnyView(view))
     }
     
-    func presentFullScreenSheet<V: View>(_ view: V) {
-          activeFullScreenSheet = AnyIdentifiable(id: fullScreenSheetId, view: AnyView(view))
-      }
-      
-    func dismissFullScreenSheet() {
-        activeFullScreenSheet = nil
+    public func presentFullScreenSheet<V: View>(_ view: V) {
+        activeSheetType = .fullScreenSheet(AnyView(view))
     }
     
     public func dismissSheet() {
-        activeSheet = nil
+        activeSheetType = nil
     }
     
     public func deepLink<V: Hashable>(_ screens: [V]) {

@@ -9,8 +9,6 @@ import SwiftUI
 
 // RouteView.swift
 
-import SwiftUI
-
 @available(iOS 16.0, macOS 13.0, *)
 public struct RouteView<Screen: Hashable, Content: View>: View {
     @ObservedObject private var router: Router
@@ -36,11 +34,33 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                 .navigationDestination(for: Screen.self) { screen in
                     destinationBuilder(screen)
                 }
-                .sheet(item: $router.activeSheet) { item in
-                    item.view
+                
+                .sheet(
+                    item: Binding(
+                        get: {
+                            if case .sheet(let view) = router.activeSheetType {
+                                return SheetWrapper(view: view)
+                            }
+                            return nil
+                        },
+                        set: { _ in router.dismissSheet() }
+                    )
+                ) { wrapper in
+                    wrapper.view
                 }
-                .fullScreenCover(item: $router.activeFullScreenSheet) { item in
-                    item.view
+                
+                .fullScreenCover(
+                    item: Binding(
+                        get: {
+                            if case .fullScreenSheet(let view) = router.activeSheetType {
+                                return SheetWrapper(view: view)
+                            }
+                            return nil
+                        },
+                        set: { _ in router.dismissSheet() }
+                    )
+                ) { wrapper in
+                    wrapper.view
                 }
                 .alert(item: $router.activeAlert) { alert in
                     Alert(
@@ -59,6 +79,17 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
         )
     }
 }
+
+// Basit wrapper AnyView için item protokolü sağlamak üzere
+private struct SheetWrapper: Identifiable, Equatable {
+    static func == (lhs: SheetWrapper, rhs: SheetWrapper) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    let id = UUID()
+    let view: AnyView
+}
+
 
 @available(macOS 10.15, *)
 public struct AnyIdentifiable: Identifiable, Equatable {
