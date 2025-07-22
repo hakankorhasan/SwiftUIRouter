@@ -35,24 +35,32 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                     destinationBuilder(screen)
                 }
                 .sheet(
-                    item: Binding<Router.ActiveSheetType?>(
+                    item: Binding(
                         get: {
-                            if case .sheet(let view) = router.activeSheetType {
-                                return .sheet(view)
+                            if case let .sheet(id, view) = router.activeSheetType {
+                                return AnyIdentifiable(id: id, view: view)
                             }
                             return nil
                         },
-                        set: { newValue in
-                            if newValue == nil || (newValue != nil && !isSheet(newValue)) {
-                                router.dismissSheet()
-                            }
-                        }
+                        set: { _ in router.dismissSheet() }
                     )
-                ) { sheet in
-                    if case .sheet(let view) = sheet {
-                        view
-                    }
+                ) { wrapper in
+                    wrapper.view
                 }
+                .fullScreenCover(
+                    item: Binding(
+                        get: {
+                            if case let .fullScreenSheet(id, view) = router.activeSheetType {
+                                return AnyIdentifiable(id: id, view: view)
+                            }
+                            return nil
+                        },
+                        set: { _ in router.dismissSheet() }
+                    )
+                ) { wrapper in
+                    wrapper.view
+                }
+
                 .alert(item: $router.activeAlert) { alert in
                     Alert(
                         title: Text(alert.title),
@@ -60,25 +68,6 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                         dismissButton: .default(Text(alert.button))
                     )
                 }
-        }
-        .fullScreenCover(
-            item: Binding<Router.ActiveSheetType?>(
-                get: {
-                    if case .fullScreenSheet(let view) = router.activeSheetType {
-                        return .fullScreenSheet(view)
-                    }
-                    return nil
-                },
-                set: { newValue in
-                    if newValue == nil || (newValue != nil && !isFullScreenSheet(newValue)) {
-                        router.dismissSheet()
-                    }
-                }
-            )
-        ) { fullScreenSheet in
-            if case .fullScreenSheet(let view) = fullScreenSheet {
-                view
-            }
         }
     }
     
@@ -88,18 +77,6 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
             set: { router.tabPaths[tabID] = $0 }
         )
     }
-}
-
-private func isSheet(_ sheet: Router.ActiveSheetType?) -> Bool {
-    guard let sheet else { return false }
-    if case .sheet = sheet { return true }
-    return false
-}
-
-private func isFullScreenSheet(_ sheet: Router.ActiveSheetType?) -> Bool {
-    guard let sheet else { return false }
-    if case .fullScreenSheet = sheet { return true }
-    return false
 }
 
 @available(macOS 10.15, *)
