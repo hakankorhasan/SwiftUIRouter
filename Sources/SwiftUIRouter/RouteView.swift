@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+// RouteView.swift
+
+import SwiftUI
+
 @available(iOS 16.0, macOS 13.0, *)
 public struct RouteView<Screen: Hashable, Content: View>: View {
     @ObservedObject private var router: Router
@@ -32,10 +36,7 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
                 .navigationDestination(for: Screen.self) { screen in
                     destinationBuilder(screen)
                 }
-                .sheet(item: Binding(
-                    get: { router.activeSheet.map { AnyIdentifiable(id: UUID(), view: $0) } },
-                    set: { _ in router.dismissSheet() }
-                )) { item in
+                .sheet(item: $router.activeSheet) { item in
                     item.view
                 }
                 .alert(item: $router.activeAlert) { alert in
@@ -57,7 +58,16 @@ public struct RouteView<Screen: Hashable, Content: View>: View {
 }
 
 @available(macOS 10.15, *)
-struct AnyIdentifiable: Identifiable {
-    let id: UUID
-    let view: AnyView
+public struct AnyIdentifiable: Identifiable, Equatable {
+    public let id: UUID
+    public let view: AnyView
+    
+    public static func == (lhs: AnyIdentifiable, rhs: AnyIdentifiable) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public init(id: UUID, view: AnyView) {
+        self.id = id
+        self.view = view
+    }
 }

@@ -13,7 +13,7 @@ public final class Router: ObservableObject {
     @Published public var selectedTabID: String = ""
     @Published public var tabPaths: [String: NavigationPath] = [:]
     
-    @Published public var activeSheet: AnyView?
+    @Published public var activeSheet: AnyIdentifiable?
     @Published public var activeAlert: AlertItem?
     
     private init() {}
@@ -49,14 +49,13 @@ public final class Router: ObservableObject {
         tabPaths[id] = NavigationPath()
     }
     
-    /// ✅ Tab değiştirince sıfırla
     public func switchTab(_ id: String) {
         selectedTabID = id
-        tabPaths[id] = NavigationPath() // <-- Reset burada
+        tabPaths[id] = NavigationPath()
     }
     
     public func presentSheet<V: View>(_ view: V) {
-        activeSheet = AnyView(view)
+        activeSheet = AnyIdentifiable(id: UUID(), view: AnyView(view))
     }
     
     public func dismissSheet() {
@@ -67,7 +66,7 @@ public final class Router: ObservableObject {
         tabPaths[selectedTabID] = NavigationPath(screens)
     }
     
-    public func showAlert(title: String, message: String, button: String = "Tamam") {
+    public func showAlert(title: String, message: String, button: String = "OK") {
         activeAlert = AlertItem(title: title, message: message, button: button)
     }
 }
