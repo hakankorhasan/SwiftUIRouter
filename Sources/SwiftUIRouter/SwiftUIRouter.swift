@@ -111,8 +111,18 @@ public final class Router: ObservableObject {
     }
 
     public func presentFullScreenSheet<V: View>(_ view: V) {
-        activeSheetType = .fullScreenSheet(id: UUID(), view: AnyView(view))
+        // Önce mevcut modal varsa kapat
+        if activeSheetType != nil {
+            dismissSheet()
+            // Küçük bir gecikme ver
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.activeSheetType = .fullScreenSheet(id: UUID(), view: AnyView(view))
+            }
+        } else {
+            activeSheetType = .fullScreenSheet(id: UUID(), view: AnyView(view))
+        }
     }
+
 
     
     public func dismissSheet() {
