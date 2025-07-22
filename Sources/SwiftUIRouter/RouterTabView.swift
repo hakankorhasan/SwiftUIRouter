@@ -66,13 +66,16 @@ public struct RouteTabView<Screen: Hashable>: View {
                         .onTapGesture {
                             router.dismissPopup()
                         }
+                    
                     popup
+                        .zIndex(1)
                 }
                 .transition(.opacity)
                 .zIndex(1)
             }
         }
     }
+
 
     // MARK: - Bindings
     private var tabSelectionBinding: Binding<String> {
