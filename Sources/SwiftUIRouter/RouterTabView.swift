@@ -59,14 +59,18 @@ public struct RouteTabView<Screen: Hashable>: View {
     
     private var popupOverlay: some View {
         Group {
-            if let id = router.activePopupID, let popup = router.activePopup {
-                popup
-                    .background(Color.black.opacity(0.4).ignoresSafeArea())
+            if let _ = router.activePopupID, let popup = router.activePopup {
+                
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
                     .onTapGesture {
                         router.dismissPopup()
                     }
-                    .transition(.opacity)
                     .zIndex(1)
+                
+                popup
+                    .zIndex(2)
+                    .transition(.opacity)
             }
         }
     }
